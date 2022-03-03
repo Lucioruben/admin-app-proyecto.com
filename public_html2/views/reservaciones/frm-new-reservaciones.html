@@ -1,0 +1,191 @@
+<div id="mdCreate" class="modal fade" role="dialog">
+<div class="modal-dialog modal-lg" role="document">
+<div class="modal-content">
+<div class="modal-header">
+  <h4><b>Nueva reservación</b></h4>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+    <div class="modal-body">
+
+      <form id="frmNewReservaciones">
+
+                <div class="card-body">
+
+                  <div class="row">
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label for="txtdni">DNI</label>
+                        <input type="text" name="txtdni" class="form-control" id="txtdni" placeholder="Ingrese Dni">
+                      </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label for="txtapellido">Apellidos</label>
+                        <input type="text" name="txtapellido" class="form-control" id="txtapellido" placeholder="Ingrese apellidos">
+                      </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label for="txtnombre">Nombres</label>
+                        <input type="text" name="txtnombre" class="form-control" id="txtnombre" placeholder="Ingrese nombres">
+                      </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-group">
+                          <label for="ddlnivel">Nivel</label>
+                            <select onchange="llenarGrados()" class="custom-select" id="ddlnivel">
+                              <option value="">Selecciona nivel</option>
+                              <option value="Inicial">Inicial</option>
+                              <option value="Primaria">Primaria</option>
+                              <option value="Secundaria">Secundaria</option>                        
+                            </select>                            
+                    </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label for="ddlgrado">Grado</label>
+                            <select class="custom-select" id="ddlgrado">
+                              <option value="">Selecciona grado</option>
+                              <option value="3 años">3 años</option>
+                              <option value="4 años">4 años</option>
+                              <option value="5 años">5 años</option>
+                              <option value="Primero">Primero</option>
+                              <option value="Segundo">Segundo</option>
+                              <option value="Tercero">Tercero</option>
+                              <option value="Cuarto">Cuarto</option>
+                              <option value="Quinto">Quinto</option>
+                              <option value="Sexto">Sexto</option>                          
+                            </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label for="ddlcondicion">Condición</label>
+                            <select class="form-control" id="ddlcondicion">
+                              <option value="">Selecciona condición</option>
+                              <option value="Ingresante">Ingresante</option>
+                              <option value="Trasladado">Trasladado</option>                        
+                            </select>
+                      </div>
+                    </div>
+
+                    <div class="col-md-3">
+                      <div class="form-group">
+                        <label for="txtcelular">Número de celular</label>
+                        <input type="text" name="txtcelular" class="form-control" id="txtcelular" placeholder="Ingrese número de celular">
+                      </div>
+                    </div>                   
+                  </div>
+
+                  
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                  <button type="submit" class="btn btn-primary">Guardar</button>
+                  <button class="btn btn-secondary" onclick="$('#mdCreate').modal('hide');">Cancelar</button>
+                </div>
+              </form>
+    </div>
+</div>
+</div>
+</div>
+
+              
+            
+
+<script>
+
+$(function () {
+  $.validator.setDefaults({
+    submitHandler: function () {
+
+      console.log(
+        {
+          dni:$("#txtdni").val(),
+          apellido:$("#txtapellido").val(),
+          nombre:$("#txtnombre").val(),
+          nivel:$("#ddlnivel").val(),
+          grado:$("#ddlgrado").val(),
+          condicion:$("#ddlcondicion").val(),
+          celular:$("#txtcelular").val()
+        }
+
+        );
+
+    
+      $.ajax({
+        method:"POST",
+        url:"http://apis-app-proyecto.com/api/v1/reservaciones",
+        data:
+        {
+          dni:$("#txtdni").val(),
+          apellido:$("#txtapellido").val(),
+          nombre:$("#txtnombre").val(),
+          nivel:$("#ddlnivel").val(),
+          grado:$("#ddlgrado").val(),
+          condicion:$("#ddlcondicion").val(),
+          celular:$("#txtcelular").val()
+        }
+
+      }).done(function(response){
+        $("#txtdni").val("");
+        $("#txtapellido").val("");
+        $("#txtnombre").val("");
+        $("#selectnivel").val("");
+        $("#selectgrado").val("");
+        $("#selectcondicion").val("");
+        $("#txtcelular").val("");
+        $('#mdCreate').modal('hide');
+
+        updateDataTable();
+        
+
+
+      });
+
+    }
+  });
+  $('#frmNewReservaciones').validate({
+    rules: {
+      txtdni: {required: true},
+      txtapellido: {required: true},
+      txtnombre: {required: true},      
+      txtcelular: {required: true},      
+    },
+    messages: {
+      txtdni: {
+        required: "Ingrese el DNI del estudiante"
+      },
+      txtapellido: {
+        required: "Ingrese los apellidos del estudiante"
+      },
+      txtnombre: {
+        required: "Ingrese los nombres del estudiante"
+      },      
+      txtcelular: {
+        required: "Ingrese el número de celular"
+      }      
+      },      
+    errorElement: 'span',
+    errorPlacement: function (error, element) {
+      error.addClass('invalid-feedback');
+      element.closest('.form-group').append(error);
+    },
+    highlight: function (element, errorClass, validClass) {
+      $(element).addClass('is-invalid');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+      $(element).removeClass('is-invalid');
+    }
+  });
+});
+
+</script>
+
